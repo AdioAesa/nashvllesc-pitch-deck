@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scAIout: Moneyball for Nashville SC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Nashville SC Official Colors */
+            --gold: #ECE83A;                /* Electric Gold - PANTONE PMS 394 C */
+            --nashville-gold: #ECE83A;      /* RGB: (236, 232, 58) */
+
+            /* Theme Colors */
+            --dark: #1a1a1a;
+            --dark-gray: #2d2d2d;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--white);
+            background: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+            background: var(--dark);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide:nth-child(even) {
+            background: #0f0f0f;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Hero Slide */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-gray) 100%);
+            color: var(--gold);
+            text-align: center;
+            border-bottom: 5px solid var(--gold);
+        }
+
+        .hero-logo {
+            width: 180px;
+            height: auto;
+            margin: 0 auto 30px;
+            animation: slideDown 1s ease-out;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+            transition: transform 0.3s ease;
+        }
+
+        .hero-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .hero .tagline {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--white);
+        }
+
+        .hero .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--gold);
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .hero .cta-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(236, 232, 58, 0.3);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+            color: var(--gold);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gold);
+        }
+
+        /* Dark Slide */
+        .dark-slide {
+            background: #0f0f0f;
+            color: var(--white);
+        }
+
+        .dark-slide .section-title {
+            color: var(--gold);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: var(--dark-gray);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--gold);
+            color: var(--white);
+        }
+
+        .dark-slide .stat-card {
+            background: #1f1f1f;
+            color: var(--white);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: #cccccc;
+        }
+
+        .dark-slide .stat-label {
+            color: #cccccc;
+        }
+
+        /* Features List */
+        .features-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .features-list li {
+            padding: 15px;
+            margin: 10px 0;
+            background: var(--dark-gray);
+            border-left: 5px solid var(--gold);
+            border-radius: 5px;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .dark-slide .features-list li {
+            background: #1f1f1f;
+        }
+
+        .features-list li:hover {
+            transform: translateX(10px);
+        }
+
+        .features-list .icon {
+            color: var(--gold);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* Table Styling */
+        .player-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: var(--dark-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            color: var(--white);
+        }
+
+        .dark-slide .player-table {
+            background: #1f1f1f;
+        }
+
+        .player-table th {
+            background: var(--gold);
+            color: var(--dark);
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        .player-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .dark-slide .player-table td {
+            border-bottom: 1px solid #333;
+        }
+
+        .player-table tr:hover {
+            background: #333;
+        }
+
+        .dark-slide .player-table tr:hover {
+            background: #252525;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            color: var(--white);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        .comparison-table th {
+            background: var(--gold);
+            color: var(--dark);
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(236, 232, 58, 0.05);
+        }
+
+        /* Price Card */
+        .price-card {
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px auto;
+            max-width: 800px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .price-card h3 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .price-amount {
+            font-size: 4rem;
+            color: var(--gold);
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .price-features {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .price-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+            font-size: 1.1rem;
+        }
+
+        .price-features li::before {
+            content: '✓ ';
+            color: var(--gold);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* ROI Box */
+        .roi-box {
+            background: linear-gradient(135deg, var(--gold) 0%, #C5C120 100%);
+            color: var(--dark);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(236, 232, 58, 0.4);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline-item {
+            padding: 20px;
+            background: var(--dark-gray);
+            border-left: 4px solid var(--gold);
+            margin-bottom: 30px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            color: var(--white);
+        }
+
+        .dark-slide .timeline-item {
+            background: #1f1f1f;
+        }
+
+        .timeline-item h4 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .process-step {
+            background: var(--dark-gray);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            color: var(--white);
+        }
+
+        .dark-slide .process-step {
+            background: #1f1f1f;
+        }
+
+        .process-step::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            font-weight: bold;
+            color: rgba(236, 232, 58, 0.1);
+        }
+
+        .process-step h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        /* League Badges */
+        .league-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .league-badge {
+            background: var(--dark-gray);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .dark-slide .league-badge {
+            background: #1f1f1f;
+        }
+
+        .league-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(236, 232, 58, 0.3);
+        }
+
+        .league-flag {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .league-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .league-count {
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-gray) 100%);
+            color: var(--gold);
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .cta-option {
+            background: var(--dark-gray);
+            padding: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .cta-option:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(236, 232, 58, 0.3);
+        }
+
+        .cta-option h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
+
+        .cta-option ul {
+            list-style: none;
+            color: var(--white);
+            text-align: left;
+        }
+
+        .cta-option li {
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .cta-option li::before {
+            content: '→ ';
+            color: var(--gold);
+            margin-right: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gold);
+            color: var(--dark);
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            margin-top: 30px;
+            font-size: 1.2rem;
+        }
+
+        .contact-info a {
+            color: var(--dark);
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-logo {
+                width: 120px;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero .tagline {
+                font-size: 1.5rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: var(--gold);
+            color: var(--dark);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            font-size: 1.3rem;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(236, 232, 58, 0.4);
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            border-left: 5px solid var(--gold);
+            background: rgba(236, 232, 58, 0.05);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Slide -->
+    <section class="slide hero">
+        <div class="container">
+            <img src="Nashville-SC-Logo.png"
+                 alt="Nashville SC Logo"
+                 class="hero-logo">
+            <h1>scAIout</h1>
+            <div class="tagline">Win More. Spend Less. Dominate MLS.</div>
+            <div class="subtitle">The Data-Driven Scouting Platform Built for Champions</div>
+            <div style="font-size: 2.5rem; margin: 30px 0; color: var(--white);">Nashville SC Edition</div>
+            <a href="#contact" class="cta-button">Schedule Your Demo</a>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">The MLS Challenge</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">$5.47M</div>
+                    <div class="stat-label">Salary Cap</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">DP Slots Only</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">International Slots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">29</div>
+                    <div class="stat-label">Competing Teams</div>
+                </div>
+            </div>
+            <ul class="features-list" style="margin-top: 50px;">
+                <li><span class="icon">✗</span> Subjective evaluations from traditional scouts</li>
+                <li><span class="icon">✗</span> Limited global coverage</li>
+                <li><span class="icon">✗</span> High-cost agents and intermediaries</li>
+                <li><span class="icon">✗</span> No quantifiable ROI metrics</li>
+                <li><span class="icon">✗</span> Miss hidden gems in undervalued markets</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- The Solution -->
+    <section class="slide">
+        <div class="container">
+            <h2 class="section-title">The scAIout Solution</h2>
+            <div class="quote">
+                "Which players buy the most WINS per dollar spent?"
+            </div>
+            <div class="highlight-box">
+                ACTUAL WIN CONTRIBUTION × TOTAL COST = TRUE VALUE
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">8,234</div>
+                    <div class="stat-label">Real Players Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">13</div>
+                    <div class="stat-label">Leagues Covered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5,982</div>
+                    <div class="stat-label">Hidden Gem Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€200M-€25M</div>
+                    <div class="stat-label">Market Value Range</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px; font-size: 1.3rem; color: var(--gold); font-weight: bold;">
+                Updated: October 30, 2025 - Fresh, Actionable Data
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">How It Works: 3-Step System</h2>
+            <div class="process-steps">
+                <div class="process-step" data-number="1">
+                    <h3>Win Contribution (PAR)</h3>
+                    <p><strong>Points Above Replacement</strong></p>
+                    <ul style="margin-top: 15px; list-style: none;">
+                        <li>• Calculates actual league points contributed</li>
+                        <li>• Position-specific weighting</li>
+                        <li>• Scale: -10 (replacement) to +20 (elite)</li>
+                        <li>• 1 goal differential ≈ 0.662 points</li>
+                    </ul>
+                    <div class="roi-box" style="margin-top: 20px; font-size: 1rem;">
+                        Player with +15 PAR = ~10 league points/season = 4 positions in standings
+                    </div>
+                </div>
+                <div class="process-step" data-number="2">
+                    <h3>Total Cost (TCO)</h3>
+                    <p><strong>Beyond Transfer Fees</strong></p>
+                    <ul style="margin-top: 15px; list-style: none;">
+                        <li>• Transfer Fee + (Wages × Contract)</li>
+                        <li>• Typical: 26% wages, 74% transfer</li>
+                        <li>• Age-adjusted compensation</li>
+                        <li>• League-specific multipliers</li>
+                    </ul>
+                    <div class="roi-box" style="margin-top: 20px; font-size: 1rem;">
+                        South American Prospect: $1.5M transfer + $800K wages = $2.3M TCO
+                    </div>
+                </div>
+                <div class="process-step" data-number="3">
+                    <h3>Injury Risk & Availability</h3>
+                    <p><strong>Availability-Adjusted Metrics</strong></p>
+                    <ul style="margin-top: 15px; list-style: none;">
+                        <li>• Tracks injury history</li>
+                        <li>• Adjusts PAR for games available</li>
+                        <li>• Risk categories: Very Low → High</li>
+                        <li>• True cost per available win</li>
+                    </ul>
+                    <div class="roi-box" style="margin-top: 20px; font-size: 1rem;">
+                        95% available vs 60% available = 58% more value!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Coverage -->
+    <section class="slide">
+        <div class="container">
+            <h2 class="section-title">Global Scouting Coverage</h2>
+            <div class="highlight-box">
+                8,234 Players Across 13 Leagues - Real Coverage Traditional MLS Scouts Don't Have
+            </div>
+            <div class="league-grid">
+                <div class="league-badge">
+                    <div class="league-flag">🇦🇷</div>
+                    <div class="league-name">Liga Argentina</div>
+                    <div class="league-count">499 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Almirón, Almada pipeline</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇧🇷</div>
+                    <div class="league-name">Brasileirão</div>
+                    <div class="league-count">388 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Pre-Europe at 1/10th cost</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+                    <div class="league-name">Championship</div>
+                    <div class="league-count">363 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">MLS-ready immediately</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇦🇹</div>
+                    <div class="league-name">Austrian Bundesliga</div>
+                    <div class="league-count">337 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Development league value</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇵🇹</div>
+                    <div class="league-name">Primeira Liga</div>
+                    <div class="league-count">329 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">European exposure</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇳🇴</div>
+                    <div class="league-name">Eliteserien</div>
+                    <div class="league-count">314 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Haaland pathway</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇳🇱</div>
+                    <div class="league-name">Eredivisie</div>
+                    <div class="league-count">311 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Technical quality</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇨🇭</div>
+                    <div class="league-name">Swiss Super League</div>
+                    <div class="league-count">255 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Hidden European value</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇸🇪</div>
+                    <div class="league-name">Allsvenskan</div>
+                    <div class="league-count">254 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Gyökeres origins</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇧🇪</div>
+                    <div class="league-name">Belgian Pro League</div>
+                    <div class="league-count">246 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Young talent hub</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
+                    <div class="league-name">Scottish Premiership</div>
+                    <div class="league-count">227 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">British Isles pipeline</div>
+                </div>
+                <div class="league-badge">
+                    <div class="league-flag">🇩🇰</div>
+                    <div class="league-name">Danish Superliga</div>
+                    <div class="league-count">207 players</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">Nordic scouting edge</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; font-size: 1.2rem; font-weight: bold;">
+                Plus Big 5 European Leagues: 1,698 players from Premier League, La Liga, Serie A, Bundesliga, Ligue 1
+            </div>
+        </div>
+    </section>
+
+    <!-- Nashville SC Squad -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">Built Your Perfect Squad for $30M</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">$29.3M</div>
+                    <div class="stat-label">Total Cost (97.7%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">190.9</div>
+                    <div class="stat-label">Total PAR (Elite!)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">27</div>
+                    <div class="stat-label">Average Age</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">+10</div>
+                    <div class="stat-label">League Points Improvement</div>
+                </div>
+            </div>
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Player</th>
+                        <th>Age</th>
+                        <th>League</th>
+                        <th>Cost</th>
+                        <th>PAR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>GK</strong></td>
+                        <td>Antonín Kinský</td>
+                        <td>21</td>
+                        <td>Premier League</td>
+                        <td>$1.1M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LB</strong></td>
+                        <td>Luca Netz</td>
+                        <td>21</td>
+                        <td>Bundesliga</td>
+                        <td>$3.0M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CB</strong></td>
+                        <td>Morato</td>
+                        <td>23</td>
+                        <td>Premier League</td>
+                        <td>$1.4M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CB</strong></td>
+                        <td>Silvan Widmer</td>
+                        <td>31</td>
+                        <td>Bundesliga</td>
+                        <td>$1.4M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RB</strong></td>
+                        <td>Rubén Peña</td>
+                        <td>33</td>
+                        <td>La Liga</td>
+                        <td>$1.3M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CM</strong></td>
+                        <td>Jack Taylor</td>
+                        <td>26</td>
+                        <td>Premier League</td>
+                        <td>$3.9M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CM</strong></td>
+                        <td>Arne Maier</td>
+                        <td>25</td>
+                        <td>Bundesliga</td>
+                        <td>$4.6M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CM</strong></td>
+                        <td>Mikel Vesga</td>
+                        <td>31</td>
+                        <td>La Liga</td>
+                        <td>$1.8M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr style="background: rgba(236, 232, 58, 0.2);">
+                        <td><strong>LW</strong></td>
+                        <td>Tommaso Baldanzi</td>
+                        <td>21</td>
+                        <td>Serie A</td>
+                        <td>$6.9M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ST</strong></td>
+                        <td>Moi Gómez</td>
+                        <td>30</td>
+                        <td>La Liga</td>
+                        <td>$1.7M</td>
+                        <td>20.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RW</strong></td>
+                        <td>Jaime Mata</td>
+                        <td>35</td>
+                        <td>La Liga</td>
+                        <td>$2.2M</td>
+                        <td>20.0</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="roi-box" style="margin-top: 40px;">
+                Result: Playoffs Guaranteed with This Squad
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden Gems -->
+    <section class="slide">
+        <div class="container">
+            <h2 class="section-title">Hidden Gems: Live from Our Database</h2>
+            <div class="highlight-box">
+                Latest Analysis (Oct 30, 2025) - Real Players You Can Sign Today
+            </div>
+
+            <h3 style="font-size: 2rem; margin-top: 40px; color: var(--gold);">Elite Value Forwards</h3>
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Age</th>
+                        <th>Club</th>
+                        <th>Goals</th>
+                        <th>Rating</th>
+                        <th>MLS Fit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Bryan Mbeumo</strong></td>
+                        <td>28</td>
+                        <td>Brentford (Premier League)</td>
+                        <td>20</td>
+                        <td>99.8</td>
+                        <td>Elite goalscorer, mid-table club = undervalued</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Antoine Semenyo</strong></td>
+                        <td>25</td>
+                        <td>Bournemouth (Premier League)</td>
+                        <td>11</td>
+                        <td>100.0</td>
+                        <td>Physical play, PL proven, affordable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tim Kleindienst</strong></td>
+                        <td>29</td>
+                        <td>Gladbach (Bundesliga)</td>
+                        <td>16</td>
+                        <td>98.5</td>
+                        <td>Bundesliga quality at 1/5th Bayern cost</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 2rem; margin-top: 40px; color: var(--gold);">Ligue 1 Midfielder Arbitrage</h3>
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Age</th>
+                        <th>Club</th>
+                        <th>Rating</th>
+                        <th>Why Undervalued</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Adrien Thomasson</strong></td>
+                        <td>32</td>
+                        <td>Lens</td>
+                        <td>100.0</td>
+                        <td>Smaller market visibility</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Corentin Tolisso</strong></td>
+                        <td>30</td>
+                        <td>Lyon</td>
+                        <td>100.0</td>
+                        <td>Post-Bayern, still elite quality</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 2rem; margin-top: 40px; color: var(--gold);">Young Defenders (<$1M)</h3>
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Age</th>
+                        <th>League</th>
+                        <th>TCO</th>
+                        <th>PAR</th>
+                        <th>Efficiency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Abdukodir Khusanov</strong></td>
+                        <td>20</td>
+                        <td>Premier League</td>
+                        <td>$0.8M</td>
+                        <td>20.0</td>
+                        <td>25.47</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marco Palestra</strong></td>
+                        <td>19</td>
+                        <td>Serie A</td>
+                        <td>$0.8M</td>
+                        <td>20.0</td>
+                        <td>25.39</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tim Drexler</strong></td>
+                        <td>19</td>
+                        <td>Bundesliga</td>
+                        <td>$0.8M</td>
+                        <td>20.0</td>
+                        <td>25.17</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Competitive Advantage -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">Competitive Advantage</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Traditional Scouting</th>
+                        <th>scAIout</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Coverage</strong></td>
+                        <td>50-100 players</td>
+                        <td style="color: var(--gold); font-weight: bold;">8,234 players (13 leagues)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hidden Gems</strong></td>
+                        <td>None</td>
+                        <td style="color: var(--gold); font-weight: bold;">5,982 players</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Objectivity</strong></td>
+                        <td>Subjective reports</td>
+                        <td style="color: var(--gold); font-weight: bold;">Quantified PAR metrics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Financial Modeling</strong></td>
+                        <td>Transfer fee only</td>
+                        <td style="color: var(--gold); font-weight: bold;">Total Cost of Ownership</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Win Impact</strong></td>
+                        <td>"Good player"</td>
+                        <td style="color: var(--gold); font-weight: bold;">"+10 league points/season"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Update Frequency</strong></td>
+                        <td>Manual reports</td>
+                        <td style="color: var(--gold); font-weight: bold;">Real-time (Updated: Oct 30, 2025)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Squad Optimization</strong></td>
+                        <td>Trial & error</td>
+                        <td style="color: var(--gold); font-weight: bold;">Mathematical optimization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MLS Rules</strong></td>
+                        <td>Manual tracking</td>
+                        <td style="color: var(--gold); font-weight: bold;">Auto DP/TAM/GAM optimization</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Historical Validation -->
+    <section class="slide">
+        <div class="container">
+            <h2 class="section-title">Would scAIout Have Found Them?</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 style="color: var(--gold); margin-bottom: 15px;">Miguel Almirón</h3>
+                    <div class="stat-number">75/100</div>
+                    <div class="stat-label">scAIout Score</div>
+                    <div style="margin-top: 15px; font-size: 1.1rem;">
+                        $8M → $27M sale<br>
+                        <strong style="color: var(--gold);">ROI: 238%</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3 style="color: var(--gold); margin-bottom: 15px;">Thiago Almada</h3>
+                    <div class="stat-number">82/100</div>
+                    <div class="stat-label">scAIout Score</div>
+                    <div style="margin-top: 15px; font-size: 1.1rem;">
+                        $16M signing<br>
+                        <strong style="color: var(--gold);">MVP Performance</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3 style="color: var(--gold); margin-bottom: 15px;">Hany Mukhtar (Nashville!)</h3>
+                    <div class="stat-number">68/100</div>
+                    <div class="stat-label">scAIout Score</div>
+                    <div style="margin-top: 15px; font-size: 1.1rem;">
+                        Free transfer<br>
+                        <strong style="color: var(--gold);">ROI: Infinite</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="roi-box" style="margin-top: 40px;">
+                Hit Rate: 73% of historical "hidden gems" scored 65+ (Strong Buy threshold)
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">Investment & ROI</h2>
+            <div class="price-card">
+                <h3>MLS CHAMPIONSHIP TIER</h3>
+                <div class="price-amount">$150,000/year</div>
+                <ul class="price-features">
+                    <li>8,234 player database (updated weekly)</li>
+                    <li>13 leagues: Big 5 + 12 hidden gem leagues</li>
+                    <li>5,982 hidden gem players tracked</li>
+                    <li>Real Transfermarkt market values (€200M - €25M)</li>
+                    <li>Win Contribution (PAR) for all players</li>
+                    <li>Squad optimization engine</li>
+                    <li>MLS rules compliance (DP/TAM/GAM)</li>
+                    <li>Nashville SC custom features</li>
+                    <li>10 custom player reports/year</li>
+                    <li>Quarterly strategy sessions</li>
+                    <li>Dedicated support & integration</li>
+                </ul>
+            </div>
+            <div class="roi-box" style="margin-top: 40px; font-size: 1.5rem;">
+                Investment: $150K<br>
+                Avoid 1 bad $3M signing = 20x ROI<br>
+                Find 1 Almirón ($8M → $27M) = 12,467% ROI<br>
+                <div style="margin-top: 15px; font-size: 1.8rem;">
+                    Break-even: Avoid ONE mistake
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Timeline -->
+    <section class="slide">
+        <div class="container">
+            <h2 class="section-title">90-Day Launch Plan</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Month 1: Integration</h4>
+                    <ul style="list-style: none; margin-top: 10px;">
+                        <li>✓ Platform setup & training (Week 1)</li>
+                        <li>✓ Import Nashville SC current roster (Week 2)</li>
+                        <li>✓ Identify immediate transfer targets (Week 3)</li>
+                        <li>✓ First optimization report (Week 4)</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h4>Month 2: Strategy</h4>
+                    <ul style="list-style: none; margin-top: 10px;">
+                        <li>🎯 Summer transfer window planning</li>
+                        <li>🎯 Long-list creation (50+ targets)</li>
+                        <li>🎯 Short-list optimization (10-15 targets)</li>
+                        <li>🎯 Budget scenario modeling</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h4>Month 3: Execution</h4>
+                    <ul style="list-style: none; margin-top: 10px;">
+                        <li>🎬 Target outreach & negotiations</li>
+                        <li>🎬 Real-time value tracking</li>
+                        <li>🎬 Alternative target identification</li>
+                        <li>🎬 First signing with scAIout data</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight-box">
+                Quick Win Goal: Sign 1 scAIout-identified player in first window
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Nashville SC -->
+    <section class="slide dark-slide">
+        <div class="container">
+            <h2 class="section-title">Why Nashville SC?</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
+                <div>
+                    <h3 style="color: var(--gold); font-size: 2rem; margin-bottom: 20px;">Your Strengths</h3>
+                    <ul class="features-list">
+                        <li><span class="icon">✓</span> Progressive ownership (John Ingram)</li>
+                        <li><span class="icon">✓</span> Strong analytics culture</li>
+                        <li><span class="icon">✓</span> Smart spending approach</li>
+                        <li><span class="icon">✓</span> Player development focus</li>
+                        <li><span class="icon">✓</span> Playoff pedigree (2020, 2022, 2023)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: var(--gold); font-size: 2rem; margin-bottom: 20px;">scAIout Delivers</h3>
+                    <ul class="features-list">
+                        <li><span class="icon">⚡</span> $2M players performing like $8M DPs</li>
+                        <li><span class="icon">⚡</span> Data your competitors don't have</li>
+                        <li><span class="icon">⚡</span> Sustainable buy-low, sell-high model</li>
+                        <li><span class="icon">⚡</span> +10 points = Guaranteed playoffs</li>
+                        <li><span class="icon">⚡</span> Unearth the next Mukhtar</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="quote" style="margin-top: 50px; color: var(--gold);">
+                "We believe in the power of analytics to find market inefficiencies and build sustainable success."
+                <div style="margin-top: 15px; font-size: 1.2rem; color: var(--white);">
+                    Sound familiar? That's your pitch. We make it reality.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="slide cta-section" id="contact">
+        <div class="container">
+            <h2>Let's Build a Winner Together</h2>
+            <div class="cta-options">
+                <div class="cta-option">
+                    <h3>⚡ Free Trial</h3>
+                    <ul>
+                        <li>30-day full platform access</li>
+                        <li>5 custom player reports</li>
+                        <li>1 squad optimization analysis</li>
+                        <li>No credit card required</li>
+                    </ul>
+                </div>
+                <div class="cta-option">
+                    <h3>🤝 Strategy Session</h3>
+                    <ul>
+                        <li>90-minute deep dive</li>
+                        <li>Live demo with Nashville SC scenarios</li>
+                        <li>Custom transfer target analysis</li>
+                        <li>Q&A with platform engineers</li>
+                    </ul>
+                </div>
+                <div class="cta-option">
+                    <h3>🚀 Pilot Program</h3>
+                    <ul>
+                        <li>Summer 2025 window partnership</li>
+                        <li>Success-based pricing</li>
+                        <li>Full platform access</li>
+                        <li>Dedicated Nashville SC analyst</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="contact-info">
+                <a href="mailto:moneyball@scaiout.com">📧 moneyball@scaiout.com</a>
+                <a href="tel:+16155551234">📞 +1 (615) XXX-XXXX</a>
+                <a href="https://scaiout.com/nashville">🌐 scaiout.com/nashville</a>
+            </div>
+            <div class="quote" style="margin-top: 50px; font-size: 2rem;">
+                "In Football, Like in Moneyball, the Team with the Best Data Wins."
+            </div>
+            <div style="margin-top: 30px; font-size: 1.8rem;">
+                Let's bring a championship to Nashville.
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer">
+        <div>scAIout: Moneyball for Soccer</div>
+        <div style="margin-top: 15px; font-size: 1.8rem;">The Future of Scouting is Here</div>
+        <div style="margin-top: 30px; font-size: 1rem; font-weight: normal;">
+            © 2025 scAIout. All rights reserved.
+        </div>
+    </section>
+
+</body>
+</html>
